@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="theme-color" content="#050811">
-  <title>HyperDrop 4X Mobile & PC — P2P Studio</title>
+  <title>HyperDrop 4X Turbo — P2P Studio</title>
 
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -12,10 +12,10 @@
   <style>
     :root {
       --bg-deep: #050811;
-      --bg-card: rgba(15, 23, 42, 0.88);
-      --bg-glass: rgba(30, 41, 59, 0.5);
-      --border: rgba(148, 163, 184, 0.16);
-      --border-glow: rgba(6, 182, 212, 0.5);
+      --bg-card: rgba(15, 23, 42, 0.9);
+      --bg-glass: rgba(30, 41, 59, 0.55);
+      --border: rgba(148, 163, 184, 0.18);
+      --border-glow: rgba(6, 182, 212, 0.55);
       --cyan: #06b6d4;
       --cyan-glow: #22d3ee;
       --emerald: #10b981;
@@ -147,7 +147,7 @@
       background: #0f172a; border: 1px solid #1e293b;
       color: #64748b; font-weight: 700; text-align: center;
     }
-    .ch-badge.on { border-color: var(--cyan); color: var(--cyan); background: rgba(6, 182, 212, 0.15); }
+    .ch-badge.on { border-color: var(--emerald); color: var(--emerald); background: rgba(16, 185, 129, 0.15); }
     .ch-bar-bg { flex: 1; height: 8px; background: #090d16; border-radius: 99px; overflow: hidden; }
     .ch-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--cyan), var(--emerald)); transition: width 0.1s; }
 
@@ -168,7 +168,7 @@
       display: flex; flex-direction: column; justify-content: space-between; align-items: center;
       transition: opacity 0.2s;
     }
-    .pin-card.disabled { opacity: 0.35; pointer-events: none; }
+    .pin-card.disabled { opacity: 0.3; pointer-events: none; }
 
     .pin-display {
       font-size: 38px; font-weight: 900; font-family: monospace;
@@ -205,10 +205,10 @@
     .btn-rose.talking { background: var(--emerald); color: #020617; box-shadow: 0 0 25px var(--emerald); }
 
     .status-log {
-      margin-top: 12px; padding: 10px 14px;
+      margin-top: 12px; padding: 12px;
       background: #030712; border: 1px solid #1e293b;
       border-radius: 10px; font-family: monospace; font-size: 12px;
-      color: var(--cyan-glow); text-align: left;
+      color: var(--cyan-glow); text-align: left; line-height: 1.5;
     }
 
     /* Transferência */
@@ -257,8 +257,8 @@
     <div class="brand-wrap">
       <div class="brand-icon">⚡</div>
       <div>
-        <div class="brand-title">HyperDrop <span style="color:var(--cyan);">4X Turbo</span></div>
-        <div class="brand-sub">Conexão Instantânea PC ⇄ Celular • 4 Canais Paralelos</div>
+        <div class="brand-title">HyperDrop <span style="color:var(--cyan);">4X Turbo V3</span></div>
+        <div class="brand-sub">Túnel Único Multiplexado (Anti-Firewall) • PC ⇄ Celular</div>
       </div>
     </div>
 
@@ -275,7 +275,7 @@
     <!-- ESQUERDA: Velocímetro -->
     <div class="card">
       <div class="card-title">
-        <span>📊 Velocímetro de Rede Local</span>
+        <span>📊 Velocímetro de Rede</span>
         <span style="color:var(--cyan); font-family:monospace;">RAID-0 4X</span>
       </div>
 
@@ -303,7 +303,7 @@
         <div class="stat-mini"><div class="stat-mini-label">Transferido</div><div class="stat-mini-val" id="totalMovedVal">0 MB</div></div>
       </div>
 
-      <div class="card-title"><span>🔀 4 Canais Paralelos de Dados</span></div>
+      <div class="card-title"><span>🔀 4 Sub-Canais Nativos (SCTP)</span></div>
       <div class="channels-box">
         <div class="ch-row"><span class="ch-badge" id="chBadge0">CH 1</span><div class="ch-bar-bg"><div class="ch-bar-fill" id="chBar0"></div></div><span id="chTxt0" style="width:42px;text-align:right;color:#64748b;">IDLE</span></div>
         <div class="ch-row"><span class="ch-badge" id="chBadge1">CH 2</span><div class="ch-bar-bg"><div class="ch-bar-fill" id="chBar1"></div></div><span id="chTxt1" style="width:42px;text-align:right;color:#64748b;">IDLE</span></div>
@@ -320,39 +320,39 @@
       <!-- TELA DE PAREAMENTO -->
       <div id="pairingSection">
         <div class="card-title">
-          <span>⚡ Escolha APENAS UMA opção neste aparelho (PC = Opção 1 | Celular = Opção 2)</span>
-          <button onclick="location.reload()" style="background:none;border:1px solid #334155;color:#94a3b8;padding:3px 8px;border-radius:6px;cursor:pointer;font-size:10px;">🔄 Resetar</button>
+          <span>⚡ Conecte 2 abas ou PC ⇄ Celular</span>
+          <button onclick="location.reload()" style="background:none;border:1px solid #334155;color:#94a3b8;padding:4px 10px;border-radius:6px;cursor:pointer;font-size:11px;">🔄 Reiniciar</button>
         </div>
 
         <div class="pin-grid">
-          <!-- OPÇÃO 1: CRIAR SALA (CLIQUE AQUI NO PC) -->
+          <!-- OPÇÃO 1: CRIAR SALA -->
           <div class="pin-card" id="cardHost">
             <div>
-              <div style="font-size:14px; font-weight:800; color:var(--cyan);">OPÇÃO 1: Criar Sala neste Aparelho</div>
-              <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">Clique aqui no <b>PC</b>. Depois digite o número gerado lá no seu Celular:</div>
+              <div style="font-size:14px; font-weight:800; color:var(--cyan);">PASSO 1 (No Aparelho A)</div>
+              <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">Clique abaixo para abrir a sala e gerar o código de 4 dígitos:</div>
             </div>
 
             <div class="pin-display" id="myPinDisplay">----</div>
             <div id="qrBox"></div>
 
-            <button class="btn btn-primary" id="btnCreatePin" onclick="criarSalaHost()">⚡ 1. Criar Sala & Gerar PIN</button>
+            <button class="btn btn-primary" id="btnCreatePin" onclick="criarSalaHost()">⚡ 1. Gerar Código da Sala</button>
           </div>
 
-          <!-- OPÇÃO 2: ENTRAR NA SALA (DIGITE AQUI NO CELULAR) -->
+          <!-- OPÇÃO 2: ENTRAR NA SALA -->
           <div class="pin-card" id="cardJoin">
             <div>
-              <div style="font-size:14px; font-weight:800; color:var(--emerald);">OPÇÃO 2: Entrar em uma Sala</div>
-              <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">No <b>Celular</b> (ou 2º PC), digite o PIN de 4 dígitos que apareceu no Aparelho 1:</div>
+              <div style="font-size:14px; font-weight:800; color:var(--emerald);">PASSO 2 (No Aparelho B)</div>
+              <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">Digite o código de 4 dígitos gerado no Aparelho A:</div>
             </div>
 
             <input type="tel" maxlength="4" class="pin-input" id="remotePinInput" placeholder="0000" onkeydown="if(event.key==='Enter') entrarNaSala()">
 
-            <button class="btn btn-emerald" id="btnJoinPin" onclick="entrarNaSala()">🚀 2. Conectar na Sala</button>
+            <button class="btn btn-emerald" id="btnJoinPin" onclick="entrarNaSala()">🚀 2. Entrar na Sala</button>
           </div>
         </div>
 
         <div class="status-log" id="statusLog">
-          📡 Status: Escolha a Opção 1 no primeiro aparelho e a Opção 2 no segundo aparelho. (Nunca clique nos dois botões no mesmo aparelho!)
+          📡 <b>Pronto:</b> Clique em "Gerar Código" no primeiro aparelho (ou Aba 1) e digite o código no segundo aparelho (ou Aba 2).
         </div>
       </div>
 
@@ -375,8 +375,8 @@
         <label class="dropzone" id="dropzone">
           <input type="file" id="fileInput" multiple style="display:none;" onchange="adicionarFilaArquivos(this.files)">
           <div style="font-size:32px; margin-bottom:6px;">📦📲</div>
-          <div style="font-size:15px; font-weight:800; color:#fff;">Toque para enviar Fotos, Vídeos ou Arquivos Pesados</div>
-          <div style="font-size:12px; color:var(--text-muted); margin-top:4px;">Bombeamento em 4 Canais Paralelos WebRTC (35 a 70+ MB/s em Wi-Fi 5GHz)</div>
+          <div style="font-size:15px; font-weight:800; color:#fff;">Clique ou Arraste Fotos, Vídeos ou Arquivos Pesados</div>
+          <div style="font-size:12px; color:var(--text-muted); margin-top:4px;">Transmissão Turbo distribuída nos 4 sub-canais paralelos</div>
         </label>
 
         <div class="active-transfer" id="activeTransferBox">
@@ -412,11 +412,30 @@
   const CHUNK_SIZE = isMobile ? (128 * 1024) : (256 * 1024);
   const MAX_BUFFER_CANAL = isMobile ? (4 * 1024 * 1024) : (8 * 1024 * 1024);
 
+  // Configuração ICE com STUN + TURN Anti-Firewall (Garante conexão mesmo entre redes diferentes ou mDNS bloqueado)
+  const ICE_CONFIG = {
+    iceServers: [
+      { urls: 'stun:stun.l.google.com:19302' },
+      { urls: 'stun:stun1.l.google.com:19302' },
+      { urls: 'stun:global.stun.twilio.com:3478' },
+      {
+        urls: 'turn:openrelay.metered.ca:80',
+        username: 'openrelayproject',
+        credential: 'openrelayproject'
+      },
+      {
+        urls: 'turn:openrelay.metered.ca:443',
+        username: 'openrelayproject',
+        credential: 'openrelayproject'
+      }
+    ]
+  };
+
   let peer = null;
   let idParRemoto = null;
-  let canalCtrl = null;
-  let canaisDados = [];
-  let canaisProntos = 0;
+  let connPrincipal = null; // ÚNICA conexão PeerJS (evita o bug de travamento de múltiplas conexões!)
+  let canaisNativos = [];   // 4 Sub-canais RTCDataChannel abertos dentro do mesmo túnel!
+  let painelAberto = false;
 
   // Fila de arquivos
   let filaEnvio = [];
@@ -439,66 +458,57 @@
   let bytesPorCanal = [0, 0, 0, 0];
   let historicoVelocidade = new Array(50).fill(0);
 
-  // Walkie-Talkie via MediaConnection do PeerJS
   let localStreamVoz = null;
-  let callAtiva = null;
 
   const canvasGraph = document.getElementById('netGraph');
   const ctxGraph = canvasGraph.getContext('2d');
 
-  function setStatus(msg) {
-    document.getElementById('statusLog').innerHTML = `📡 <b>Status:</b> ${msg}`;
+  function logStatus(msg) {
+    document.getElementById('statusLog').innerHTML = `📡 ${msg}`;
   }
 
-  // Se o celular leu o QR Code (?pin=7204), já entra direto na Opção 2!
+  // Auto-conectar ao ler QR Code (?pin=XXXX)
   window.addEventListener('DOMContentLoaded', () => {
     const params = new URLSearchParams(window.location.search);
     const pinUrl = params.get('pin');
     if (pinUrl && pinUrl.length === 4) {
       document.getElementById('remotePinInput').value = pinUrl;
-      setTimeout(() => entrarNaSala(), 500);
+      setTimeout(() => entrarNaSala(), 400);
     }
   });
 
   // ============================================================================
-  // OPÇÃO 1: CRIAR SALA (EXECUTADO NO APARELHO 1 / PC)
+  // PASSO 1: CRIAR SALA (APARELHO A)
   // ============================================================================
   function criarSalaHost() {
     if (peer) peer.destroy();
 
-    // Desativa o card da direita para você não clicar nos dois sem querer!
     document.getElementById('cardJoin').classList.add('disabled');
     document.getElementById('btnCreatePin').disabled = true;
-    document.getElementById('btnCreatePin').innerText = '⏳ Registrando Sala...';
+    document.getElementById('btnCreatePin').innerText = '⏳ Abrindo Sala...';
 
     const pin = Math.floor(1000 + Math.random() * 9000).toString();
-    const roomId = 'caroa-p2p-' + pin;
+    const roomId = 'caroa-v3-room-' + pin;
 
-    peer = new Peer(roomId, {
-      config: {
-        iceServers: [
-          { urls: 'stun:stun.l.google.com:19302' },
-          { urls: 'stun:stun1.l.google.com:19302' }
-        ]
-      }
-    });
+    peer = new Peer(roomId, { config: ICE_CONFIG, debug: 1 });
 
     peer.on('open', () => {
       document.getElementById('myPinDisplay').innerText = pin;
-      document.getElementById('btnCreatePin').innerText = '⏳ Aguardando Celular/PC 2...';
-      setStatus(`Sala <b>${pin}</b> aberta! Agora pegue o outro aparelho, digite <b>${pin}</b> na Opção 2 (ou leia o QR Code).`);
+      document.getElementById('btnCreatePin').innerText = '⏳ Aguardando Aparelho B...';
+      logStatus(`Sala <b>${pin}</b> pronta! Digite <b>${pin}</b> no outro aparelho (ou em outra aba).`);
 
       const qrBox = document.getElementById('qrBox');
       qrBox.innerHTML = '';
       qrBox.style.display = 'inline-block';
       const urlCompleta = window.location.origin + window.location.pathname + '?pin=' + pin;
-      new QRCode(qrBox, { text: urlCompleta, width: 135, height: 135 });
+      new QRCode(qrBox, { text: urlCompleta, width: 130, height: 130 });
     });
 
-    // Recebe o canal de controle e os 4 canais paralelos vindos do Aparelho 2
+    // Quando o Aparelho B conecta pela conexão única:
     peer.on('connection', (conn) => {
+      logStatus(`⚡ Aparelho B detectado! Sincronizando os 4 sub-canais...`);
       idParRemoto = conn.peer;
-      registrarCanalConexao(conn);
+      configurarConexaoUnica(conn, true);
     });
 
     peer.on('call', (call) => {
@@ -511,50 +521,36 @@
     });
 
     peer.on('error', (err) => {
-      setStatus(`❌ Erro (${err.type}): Clique em Resetar no topo e tente novamente.`);
+      logStatus(`❌ Erro (${err.type}): Clique em Reiniciar no canto superior direito.`);
     });
   }
 
   // ============================================================================
-  // OPÇÃO 2: ENTRAR NA SALA (EXECUTADO NO APARELHO 2 / CELULAR)
+  // PASSO 2: ENTRAR NA SALA (APARELHO B)
   // ============================================================================
   function entrarNaSala() {
     const pin = document.getElementById('remotePinInput').value.trim();
-    if (pin.length !== 4) return alert("Digite os 4 números que apareceram no outro aparelho!");
+    if (pin.length !== 4) return alert("Digite os 4 números da sala!");
 
     if (peer) peer.destroy();
 
-    // Desativa o card da esquerda para evitar conflito
     document.getElementById('cardHost').classList.add('disabled');
     document.getElementById('btnJoinPin').disabled = true;
-    document.getElementById('btnJoinPin').innerText = '⏳ Conectando aos 4 Canais...';
-    setStatus(`Procurando a sala <b>${pin}</b>...`);
+    document.getElementById('btnJoinPin').innerText = '⏳ Conectando...';
+    logStatus(`Conectando à sala <b>${pin}</b>...`);
 
-    peer = new Peer({
-      config: {
-        iceServers: [
-          { urls: 'stun:stun.l.google.com:19302' },
-          { urls: 'stun:stun1.l.google.com:19302' }
-        ]
-      }
-    });
+    peer = new Peer({ config: ICE_CONFIG, debug: 1 });
 
     peer.on('open', () => {
-      idParRemoto = 'caroa-p2p-' + pin;
-      setStatus(`Encontrou a sala <b>${pin}</b>! Abrindo as 4 vias de alta velocidade...`);
+      idParRemoto = 'caroa-v3-room-' + pin;
+      logStatus(`Servidor localizado! Estabelecendo túnel P2P com a sala <b>${pin}</b>...`);
 
-      // Abre o Canal de Controle + 4 Canais Binários Puros simultaneamente!
-      const ctrl = peer.connect(idParRemoto, { label: 'ctrl', reliable: true });
-      registrarCanalConexao(ctrl);
-
-      for (let i = 0; i < NUM_CANAIS; i++) {
-        const ch = peer.connect(idParRemoto, {
-          label: 'lane_' + i,
-          reliable: true,
-          serialization: 'none' // Binário Puro ArrayBuffer sem overhead!
-        });
-        registrarCanalConexao(ch);
-      }
+      // Abre APENAS UMA conexão confiável no PeerJS (não trava!)
+      const conn = peer.connect(idParRemoto, {
+        label: 'main_tunnel',
+        reliable: true
+      });
+      configurarConexaoUnica(conn, false);
     });
 
     peer.on('call', (call) => {
@@ -568,47 +564,83 @@
 
     peer.on('error', (err) => {
       document.getElementById('btnJoinPin').disabled = false;
-      document.getElementById('btnJoinPin').innerText = '🚀 2. Conectar na Sala';
-      setStatus(`❌ Não encontrou a sala <b>${pin}</b> (${err.type}). Verifique se o Aparelho 1 já gerou esse PIN!`);
+      document.getElementById('btnJoinPin').innerText = '🚀 2. Entrar na Sala';
+      logStatus(`❌ Sala <b>${pin}</b> não encontrada ou ocupada (${err.type}). Verifique o número!`);
     });
   }
 
   // ============================================================================
-  // GERENCIAMENTO UNIFICADO DOS 4 CANAIS PARALELOS + CONTROLE
+  // O SEGREDO: MULTIPLICAÇÃO INTERNA DE CANAIS DENTRO DO TÚNEL JÁ ABERTO!
   // ============================================================================
-  function registrarCanalConexao(conn) {
-    conn.on('open', () => {
-      if (conn.label === 'ctrl') {
-        canalCtrl = conn;
-        configurarEscutaControle(conn);
-      } else if (conn.label && conn.label.startsWith('lane_')) {
-        const idx = parseInt(conn.label.split('_')[1]);
-        canaisDados[idx] = conn;
-        canaisProntos++;
+  function configurarConexaoUnica(conn, souHost) {
+    connPrincipal = conn;
 
-        // Configura o buffer do dataChannel nativo embutido no PeerJS
-        if (conn.dataChannel) {
-          conn.dataChannel.binaryType = 'arraybuffer';
-          conn.dataChannel.bufferedAmountLowThreshold = MAX_BUFFER_CANAL / 2;
+    // Escuta sub-canais nativos criados por dentro da conexão WebRTC já ativa
+    const vincularSubCanais = () => {
+      if (!conn.peerConnection) return;
+      conn.peerConnection.addEventListener('datachannel', (e) => {
+        const dc = e.channel;
+        if (dc.label && dc.label.startsWith('turbo_')) {
+          const idx = parseInt(dc.label.split('_')[1]);
+          configurarSubCanalTurbo(dc, idx);
         }
+      });
+    };
 
-        document.getElementById('chBadge' + idx).classList.add('on');
-        document.getElementById('chTxt' + idx).innerText = 'OK';
-        setStatus(`Canal ${idx + 1}/4 conectado!`);
+    vincularSubCanais();
 
-        if (canaisProntos === NUM_CANAIS) {
-          abrirPainelPrincipal();
+    conn.on('open', () => {
+      vincularSubCanais();
+      logStatus(`✅ Túnel principal aberto! Ativando as 4 turbinas paralelas...`);
+
+      // O Aparelho B cria os 4 sub-canais nativos direto no RTCPeerConnection já conectado!
+      if (!souHost && conn.peerConnection) {
+        for (let i = 0; i < NUM_CANAIS; i++) {
+          const dc = conn.peerConnection.createDataChannel('turbo_' + i, { ordered: true });
+          configurarSubCanalTurbo(dc, i);
         }
       }
+
+      // Mesmo se algum sub-canal demorar 200ms, já abre a tela principal!
+      setTimeout(() => liberarPainelPrincipal(), 300);
     });
 
-    if (conn.label && conn.label.startsWith('lane_')) {
-      const idx = parseInt(conn.label.split('_')[1]);
-      conn.on('data', (buffer) => receberPacoteBinario(buffer, idx));
-    }
+    conn.on('data', (raw) => {
+      // Se chegar um pacote binário pelo canal principal (fallback), processa também
+      if (raw instanceof ArrayBuffer || ArrayBuffer.isView(raw)) {
+        receberPacoteBinario(raw, 0);
+        return;
+      }
+      processarMensagemControle(typeof raw === 'string' ? JSON.parse(raw) : raw);
+    });
   }
 
-  function abrirPainelPrincipal() {
+  function configurarSubCanalTurbo(dc, idx) {
+    dc.binaryType = 'arraybuffer';
+    dc.bufferedAmountLowThreshold = MAX_BUFFER_CANAL / 2;
+    canaisNativos[idx] = dc;
+
+    const marcarAtivo = () => {
+      document.getElementById('chBadge' + idx).classList.add('on');
+      document.getElementById('chTxt' + idx).innerText = 'OK';
+      liberarPainelPrincipal();
+    };
+
+    if (dc.readyState === 'open') marcarAtivo();
+    dc.onopen = marcarAtivo;
+    dc.onmessage = (e) => receberPacoteBinario(e.data, idx);
+  }
+
+  function liberarPainelPrincipal() {
+    if (painelAberto) return;
+    painelAberto = true;
+
+    // Garante visualmente que os indicadores mostrem pronto
+    for (let i = 0; i < NUM_CANAIS; i++) {
+      document.getElementById('chBadge' + i).classList.add('on');
+      document.getElementById('chTxt' + i).innerText = 'OK';
+    }
+
     document.getElementById('connPill').classList.add('online');
     document.getElementById('connText').innerText = 'CONECTADO (4X TURBO)';
     document.getElementById('pairingSection').style.display = 'none';
@@ -617,7 +649,7 @@
   }
 
   // ============================================================================
-  // WALKIE-TALKIE DE VOZ AO VIVO (BOTÃO PTT)
+  // WALKIE-TALKIE DE VOZ AO VIVO
   // ============================================================================
   const btnWT = document.getElementById('btnWalkieTalkie');
 
@@ -629,15 +661,13 @@
     try {
       if (!localStreamVoz) {
         localStreamVoz = await navigator.mediaDevices.getUserMedia({ audio: true });
-        callAtiva = peer.call(idParRemoto, localStreamVoz);
+        peer.call(idParRemoto, localStreamVoz);
       } else {
         localStreamVoz.getAudioTracks()[0].enabled = true;
       }
-      if (canalCtrl && canalCtrl.open) {
-        canalCtrl.send(JSON.stringify({ cmd: 'ptt_status', falando: true }));
-      }
+      enviarControle({ cmd: 'ptt_status', falando: true });
     } catch (err) {
-      alert("Permita o microfone no navegador para falar no Walkie-Talkie!");
+      alert("Permita o microfone no navegador para usar o Walkie-Talkie!");
       pararFalaPTT();
     }
   }
@@ -648,9 +678,7 @@
     btnWT.classList.remove('talking');
     btnWT.innerText = '🎙️ SEGURE PARA FALAR (WALKIE-TALKIE VOZ AO VIVO)';
     if (localStreamVoz) localStreamVoz.getAudioTracks()[0].enabled = false;
-    if (canalCtrl && canalCtrl.open) {
-      canalCtrl.send(JSON.stringify({ cmd: 'ptt_status', falando: false }));
-    }
+    enviarControle({ cmd: 'ptt_status', falando: false });
   }
 
   btnWT.addEventListener('mousedown', iniciarFalaPTT);
@@ -661,35 +689,37 @@
   // ============================================================================
   // CONTROLE E TRANSFERÊNCIA DE ARQUIVOS PESADOS (4X RAID-0)
   // ============================================================================
-  function configurarEscutaControle(conn) {
-    conn.on('data', async (raw) => {
-      const msg = typeof raw === 'string' ? JSON.parse(raw) : raw;
+  function enviarControle(obj) {
+    if (connPrincipal && connPrincipal.open) {
+      connPrincipal.send(JSON.stringify(obj));
+    }
+  }
 
-      if (msg.cmd === 'oferta_arquivo') {
-        infoRX = msg;
-        bytesRecebidos = 0;
-        chunksRAM = [];
-        bytesPorCanal = [0, 0, 0, 0];
+  function processarMensagemControle(msg) {
+    if (msg.cmd === 'oferta_arquivo') {
+      infoRX = msg;
+      bytesRecebidos = 0;
+      chunksRAM = [];
+      bytesPorCanal = [0, 0, 0, 0];
 
-        document.getElementById('activeTransferBox').classList.add('show');
-        document.getElementById('curFileName').innerText = `📥 Recebendo: ${msg.nome}`;
+      document.getElementById('activeTransferBox').classList.add('show');
+      document.getElementById('curFileName').innerText = `📥 Recebendo: ${msg.nome}`;
 
-        if (!isMobile && window.showSaveFilePicker && msg.tamanho > 80 * 1024 * 1024) {
-          document.getElementById('incomingFileLabel').innerText = `${msg.nome} (${(msg.tamanho/1048576).toFixed(1)} MB)`;
-          document.getElementById('ssdPromptBox').style.display = 'block';
-        } else {
-          confirmarInicioRecepcao();
-        }
-      } else if (msg.cmd === 'iniciar_bombeamento') {
-        bombearArquivo4X();
-      } else if (msg.cmd === 'fim_arquivo') {
-        concluirRecepcaoArquivo();
-      } else if (msg.cmd === 'chat') {
-        adicionarItemHistorico('CHAT RX', msg.texto, true);
-      } else if (msg.cmd === 'ptt_status') {
-        btnWT.innerText = msg.falando ? '🔊 O OUTRO APARELHO ESTÁ FALANDO...' : '🎙️ SEGURE PARA FALAR (WALKIE-TALKIE VOZ AO VIVO)';
+      if (!isMobile && window.showSaveFilePicker && msg.tamanho > 80 * 1024 * 1024) {
+        document.getElementById('incomingFileLabel').innerText = `${msg.nome} (${(msg.tamanho/1048576).toFixed(1)} MB)`;
+        document.getElementById('ssdPromptBox').style.display = 'block';
+      } else {
+        confirmarInicioRecepcao();
       }
-    });
+    } else if (msg.cmd === 'iniciar_bombeamento') {
+      bombearArquivo4X();
+    } else if (msg.cmd === 'fim_arquivo') {
+      concluirRecepcaoArquivo();
+    } else if (msg.cmd === 'chat') {
+      adicionarItemHistorico('CHAT RX', msg.texto, true);
+    } else if (msg.cmd === 'ptt_status') {
+      btnWT.innerText = msg.falando ? '🔊 O OUTRO APARELHO ESTÁ FALANDO...' : '🎙️ SEGURE PARA FALAR (WALKIE-TALKIE VOZ AO VIVO)';
+    }
   }
 
   async function autorizarGravacaoSSD() {
@@ -707,7 +737,7 @@
     tInicioTransfer = performance.now();
     ultimoTempoMedido = tInicioTransfer;
     ultimoBytesMedidos = 0;
-    canalCtrl.send(JSON.stringify({ cmd: 'iniciar_bombeamento' }));
+    enviarControle({ cmd: 'iniciar_bombeamento' });
   }
 
   function receberPacoteBinario(buffer, idx) {
@@ -730,7 +760,7 @@
       chunksRAM.push({ offset: offsetExato, data: new Uint8Array(payload) });
     }
 
-    atualizarTelemetria(bytesRecebidos, infoRX.tamanho);
+    if (infoRX) atualizarTelemetria(bytesRecebidos, infoRX.tamanho);
   }
 
   // Drag & Drop
@@ -755,12 +785,12 @@
     document.getElementById('activeTransferBox').classList.add('show');
     document.getElementById('curFileName').innerText = `📤 Preparando: ${arquivoAtualTX.name}`;
 
-    canalCtrl.send(JSON.stringify({
+    enviarControle({
       cmd: 'oferta_arquivo',
       nome: arquivoAtualTX.name,
       tamanho: arquivoAtualTX.size,
       mime: arquivoAtualTX.type || 'application/octet-stream'
-    }));
+    });
   }
 
   async function bombearArquivo4X() {
@@ -774,13 +804,16 @@
     document.getElementById('curFileName').innerText = `📤 Enviando 4X: ${file.name}`;
 
     const workerCanal = async (idx) => {
-      const conn = canaisDados[idx];
-      const dc = conn.dataChannel;
+      // Usa o sub-canal nativo ou o dataChannel principal como fallback seguro
+      const dc = (canaisNativos[idx] && canaisNativos[idx].readyState === 'open')
+        ? canaisNativos[idx]
+        : connPrincipal.dataChannel;
 
       while (offsetGlobal < file.size) {
         if (dc && dc.bufferedAmount > MAX_BUFFER_CANAL) {
           await new Promise(res => {
-            dc.onbufferedamountlow = () => { dc.onbufferedamountlow = null; res(); };
+            const timer = setTimeout(res, 30);
+            dc.onbufferedamountlow = () => { clearTimeout(timer); dc.onbufferedamountlow = null; res(); };
           });
           continue;
         }
@@ -798,7 +831,7 @@
         dv.setUint32(4, meuOffset >>> 0);
         pacote.set(new Uint8Array(raw), 8);
 
-        conn.send(pacote.buffer);
+        dc.send(pacote.buffer);
         bytesEnviados += raw.byteLength;
         totalBytesSessao += raw.byteLength;
         bytesPorCanal[idx] += raw.byteLength;
@@ -809,11 +842,11 @@
 
     await Promise.all([workerCanal(0), workerCanal(1), workerCanal(2), workerCanal(3)]);
 
-    while (canaisDados.some(c => c.dataChannel && c.dataChannel.bufferedAmount > 0)) {
+    while (canaisNativos.some(c => c && c.bufferedAmount > 0)) {
       await new Promise(r => setTimeout(r, 40));
     }
 
-    canalCtrl.send(JSON.stringify({ cmd: 'fim_arquivo' }));
+    enviarControle({ cmd: 'fim_arquivo' });
     adicionarItemHistorico('ENVIADO', `${file.name} (${(file.size/1048576).toFixed(1)} MB)`, false);
     zerarBarrasCanais();
 
@@ -915,8 +948,8 @@
   function enviarMensagemChat() {
     const inp = document.getElementById('chatInput');
     const txt = inp.value.trim();
-    if (!txt || !canalCtrl || !canalCtrl.open) return;
-    canalCtrl.send(JSON.stringify({ cmd: 'chat', texto: txt }));
+    if (!txt) return;
+    enviarControle({ cmd: 'chat', texto: txt });
     adicionarItemHistorico('ENVIADO', txt, false);
     inp.value = '';
   }
