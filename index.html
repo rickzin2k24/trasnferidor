@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#050811">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>HyperDrop 4X Mobile & PC — P2P Studio</title>
+
+  <!-- Bibliotecas leves via CDN para Pareamento por PIN de 4 dígitos e Gerador de QR Code -->
+  <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <style>
+    :root {
+      --bg-deep: #050811;
+      --bg-card: rgba(15, 23, 42, 0.85);
+      --bg-glass: rgba(30, 41, 59, 0.5);
+      --border: rgba(148, 163, 184, 0.16);
+      --border-glow: rgba(6, 182, 212, 0.5);
+      --cyan: #06b6d4;
+      --cyan-glow: #22d3ee;
+      --emerald: #10b981;
+      --amber: #f59e0b;
+      --rose: #f43f5e;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: var(--bg-deep);
+      background-image: 
+        radial-gradient(circle at 10% 10%, rgba(6, 182, 212, 0.14), transparent 35%),
+        radial-gradient(circle at 90% 90%, rgba(16, 185, 129, 0.12), transparent 38%);
+      color: var(--text-main);
+      min-height: 100vh;
+      padding: 12px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .app-shell {
+      width: 100%;
+      max-width: 1060px;
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.75);
+      overflow: hidden;
+    }
+
+    /* Barra Superior */
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 20px;
+      background: rgba(2, 6, 23, 0.65);
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .brand-wrap { display: flex; align-items: center; gap: 12px; }
+    .brand-icon {
+      width: 40px; height: 40px; border-radius: 12px;
+      background: linear-gradient(135deg, var(--cyan), var(--emerald));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; font-weight: 900; color: #020617;
+      box-shadow: 0 0 18px rgba(6, 182, 212, 0.4);
+    }
+    .brand-title { font-size: 18px; font-weight: 800; }
+    .brand-sub { font-size: 11px; color: var(--text-muted); }
+
+    .status-cluster { display: flex; align-items: center; gap: 8px; }
+    .pill {
+      display: flex; align-items: center; gap: 7px;
+      padding: 6px 12px; border-radius: 99px;
+      font-size: 11px; font-weight: 700;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+    .pill.online {
+      background: rgba(16, 185, 129, 0.15);
+      border-color: rgba(16, 185, 129, 0.5);
+      color: #34d399;
+    }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: #64748b; }
+    .pill.online .dot { background: var(--emerald); box-shadow: 0 0 8px var(--emerald); }
+
+    /* Grid Responsivo PC & Mobile */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 350px 1fr;
+      gap: 16px;
+      padding: 16px;
+    }
+    @media (max-width: 840px) {
+      .main-grid { grid-template-columns: 1fr; padding: 12px; }
+      body { padding: 6px; }
+    }
+
+    .card {
+      background: var(--bg-glass);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 16px;
+    }
+    .card-title {
+      font-size: 11px; font-weight: 800; text-transform: uppercase;
+      letter-spacing: 0.8px; color: var(--text-muted);
+      margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;
+    }
+
+    /* Velocímetro SVG */
+    .gauge-container {
+      display: flex; flex-direction: column; align-items: center;
+      position: relative; margin: 4px 0 12px 0;
+    }
+    .gauge-svg { width: 195px; height: 115px; overflow: visible; }
+    .gauge-bg { fill: none; stroke: #0f172a; stroke-width: 14; stroke-linecap: round; }
+    .gauge-fill {
+      fill: none; stroke: url(#gradSpeed); stroke-width: 14;
+      stroke-linecap: round;
+      stroke-dasharray: 251.2;
+      stroke-dashoffset: 251.2;
+      transition: stroke-dashoffset 0.15s ease-out;
+    }
+    .gauge-center { position: absolute; bottom: 2px; text-align: center; }
+    .gauge-number {
+      font-size: 36px; font-weight: 900; font-family: monospace;
+      line-height: 1; color: var(--text-main);
+    }
+    .gauge-unit { font-size: 11px; font-weight: 700; color: var(--cyan); }
+
+    .telemetry-stats {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 8px; margin-bottom: 14px;
+    }
+    .stat-mini {
+      background: rgba(2, 6, 23, 0.65); border: 1px solid var(--border);
+      border-radius: 10px; padding: 8px; text-align: center;
+    }
+    .stat-mini-label { font-size: 10px; color: var(--text-muted); }
+    .stat-mini-val { font-size: 13px; font-weight: 800; font-family: monospace; color: var(--cyan-glow); margin-top: 2px; }
+
+    /* Barras dos 4 Canais Paralelos */
+    .channels-box { display: flex; flex-direction: column; gap: 7px; margin-bottom: 14px; }
+    .ch-row { display: flex; align-items: center; gap: 8px; font-family: monospace; font-size: 11px; }
+    .ch-badge {
+      width: 46px; padding: 3px 5px; border-radius: 6px;
+      background: #0f172a; border: 1px solid #1e293b;
+      color: #64748b; font-weight: 700; text-align: center;
+    }
+    .ch-badge.on { border-color: var(--cyan); color: var(--cyan); background: rgba(6, 182, 212, 0.15); }
+    .ch-bar-bg { flex: 1; height: 8px; background: #090d16; border-radius: 99px; overflow: hidden; }
+    .ch-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--cyan), var(--emerald)); transition: width 0.1s; }
+
+    canvas#netGraph {
+      width: 100%; height: 64px;
+      background: rgba(2, 6, 23, 0.75);
+      border: 1px solid var(--border);
+      border-radius: 10px; display: block;
+    }
+
+    /* Pareamento Fácil (PIN de 4 Dígitos + QR Code) */
+    .tabs {
+      display: flex; gap: 6px; margin-bottom: 14px;
+      background: rgba(2, 6, 23, 0.6); padding: 5px; border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+    .tab-btn {
+      flex: 1; padding: 10px 8px; border: none; border-radius: 8px;
+      background: transparent; color: var(--text-muted);
+      font-weight: 700; font-size: 12px; cursor: pointer;
+    }
+    .tab-btn.active {
+      background: linear-gradient(135deg, rgba(6, 182, 212, 0.25), rgba(16, 185, 129, 0.2));
+      color: var(--text-main); border: 1px solid var(--border-glow);
+    }
+
+    .pin-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+    }
+    @media (max-width: 600px) { .pin-grid { grid-template-columns: 1fr; } }
+
+    .pin-card {
+      background: rgba(2, 6, 23, 0.6); border: 1px solid var(--border);
+      border-radius: 14px; padding: 16px; text-align: center;
+      display: flex; flex-direction: column; justify-content: space-between; align-items: center;
+    }
+    .pin-display {
+      font-size: 38px; font-weight: 900; font-family: monospace;
+      letter-spacing: 6px; color: var(--emerald);
+      margin: 10px 0; padding: 8px 16px;
+      background: #030712; border-radius: 12px; border: 1px dashed var(--emerald);
+    }
+    #qrBox {
+      background: #fff; padding: 10px; border-radius: 12px;
+      margin: 10px auto; display: none;
+    }
+    .pin-input {
+      width: 100%; max-width: 220px; text-align: center;
+      font-size: 28px; font-weight: 900; font-family: monospace;
+      letter-spacing: 6px; padding: 10px; margin: 12px 0;
+      background: #030712; color: var(--cyan-glow);
+      border: 2px solid #334155; border-radius: 12px;
+    }
+    .pin-input:focus { outline: none; border-color: var(--cyan); }
+
+    /* Botões Gerais */
+    .btn {
+      width: 100%; padding: 12px 16px; border: none; border-radius: 10px;
+      font-weight: 800; font-size: 13px; cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      transition: transform 0.1s, opacity 0.2s;
+    }
+    .btn:active { transform: scale(0.98); }
+    .btn-primary { background: linear-gradient(135deg, var(--cyan), #0284c7); color: #020617; }
+    .btn-emerald { background: linear-gradient(135deg, var(--emerald), #059669); color: #020617; }
+    .btn-amber { background: linear-gradient(135deg, var(--amber), #d97706); color: #020617; }
+    .btn-rose {
+      background: linear-gradient(135deg, var(--rose), #be123c); color: #fff;
+      height: 54px; font-size: 15px; user-select: none; -webkit-user-select: none; touch-action: none;
+    }
+    .btn-rose.talking {
+      background: var(--emerald); color: #020617;
+      box-shadow: 0 0 25px var(--emerald);
+    }
+
+    /* Área de Transferência + Walkie Talkie */
+    .dropzone {
+      border: 2px dashed rgba(6, 182, 212, 0.55);
+      background: radial-gradient(circle, rgba(6, 182, 212, 0.1) 0%, rgba(15, 23, 42, 0.4) 100%);
+      border-radius: 16px; padding: 24px 16px;
+      text-align: center; cursor: pointer; display: block; margin-bottom: 12px;
+    }
+    .dropzone-icon { font-size: 32px; margin-bottom: 6px; }
+    .dropzone-title { font-size: 15px; font-weight: 800; color: #fff; }
+    .dropzone-sub { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+
+    .active-transfer {
+      background: rgba(2, 6, 23, 0.8); border: 1px solid var(--border-glow);
+      border-radius: 14px; padding: 14px; margin-bottom: 12px; display: none;
+    }
+    .active-transfer.show { display: block; }
+    .file-head { display: flex; justify-content: space-between; margin-bottom: 6px; }
+    .file-title { font-weight: 800; font-size: 13px; color: #fff; word-break: break-all; }
+    .file-pct { font-family: monospace; font-size: 14px; font-weight: 900; color: var(--emerald); }
+    .pbar-outer { width: 100%; height: 12px; background: #090d16; border-radius: 99px; overflow: hidden; margin-bottom: 6px; }
+    .pbar-inner { height: 100%; width: 0%; background: linear-gradient(90deg, var(--cyan), var(--emerald)); transition: width 0.08s; }
+    .file-meta { display: flex; justify-content: space-between; font-family: monospace; font-size: 11px; color: var(--text-muted); }
+
+    .history-list {
+      max-height: 165px; overflow-y: auto;
+      display: flex; flex-direction: column; gap: 6px; margin: 10px 0;
+    }
+    .history-item {
+      display: flex; justify-content: space-between; align-items: center;
+      background: rgba(2, 6, 23, 0.6); border: 1px solid var(--border);
+      border-radius: 10px; padding: 8px 12px; font-size: 12px; gap: 8px;
+    }
+    .history-tag { font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 5px; white-space: nowrap; }
+    .tag-tx { background: rgba(6, 182, 212, 0.2); color: var(--cyan-glow); }
+    .tag-rx { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+
+    .chat-bar { display: flex; gap: 8px; margin-top: 8px; }
+    .chat-bar input {
+      flex: 1; background: #030712; border: 1px solid #1e293b;
+      color: #fff; padding: 10px 12px; border-radius: 10px; font-size: 13px;
+    }
+    .code-area {
+      width: 100%; height: 55px; background: #030712; color: var(--cyan-glow);
+      border: 1px solid #1e293b; border-radius: 8px; padding: 8px;
+      font-family: monospace; font-size: 10px; margin: 6px 0; resize: none;
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-shell">
+  <!-- Topo -->
+  <div class="topbar">
+    <div class="brand-wrap">
+      <div class="brand-icon">⚡</div>
+      <div>
+        <div class="brand-title">HyperDrop <span style="color:var(--cyan);">4X Mobile & PC</span></div>
+        <div class="brand-sub">Banda Larga P2P (35–70 MB/s) + Walkie-Talkie WebRTC</div>
+      </div>
+    </div>
+
+    <div class="status-cluster">
+      <div class="pill" id="deviceBadge">📱/💻 AUTO</div>
+      <div class="pill" id="connPill">
+        <div class="dot"></div>
+        <span id="connText">DESCONECTADO</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="main-grid">
+    <!-- COLUNA ESQUERDA: Velocímetro e Canais -->
+    <div class="card">
+      <div class="card-title">
+        <span>📊 Velocímetro de Rede Local</span>
+        <span style="color:var(--cyan); font-family:monospace;">RAID-0 4X</span>
+      </div>
+
+      <div class="gauge-container">
+        <svg class="gauge-svg" viewBox="0 0 200 115">
+          <defs>
+            <linearGradient id="gradSpeed" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#06b6d4"/>
+              <stop offset="60%" stop-color="#10b981"/>
+              <stop offset="100%" stop-color="#f59e0b"/>
+            </linearGradient>
+          </defs>
+          <path class="gauge-bg" d="M 20 100 A 80 80 0 0 1 180 100" />
+          <path class="gauge-fill" id="gaugeArc" d="M 20 100 A 80 80 0 0 1 180 100" />
+        </svg>
+        <div class="gauge-center">
+          <div class="gauge-number" id="speedNum">0.0</div>
+          <div class="gauge-unit">MB / SEGUNDO</div>
+        </div>
+      </div>
+
+      <div class="telemetry-stats">
+        <div class="stat-mini">
+          <div class="stat-mini-label">Pico</div>
+          <div class="stat-mini-val" id="peakVal">0.0 MB/s</div>
+        </div>
+        <div class="stat-mini">
+          <div class="stat-mini-label">Média</div>
+          <div class="stat-mini-val" id="avgVal">0.0 MB/s</div>
+        </div>
+        <div class="stat-mini">
+          <div class="stat-mini-label">Transferido</div>
+          <div class="stat-mini-val" id="totalMovedVal">0 MB</div>
+        </div>
+      </div>
+
+      <div class="card-title"><span>🔀 4 Canais Paralelos de Dados</span></div>
+      <div class="channels-box">
+        <div class="ch-row"><span class="ch-badge" id="chBadge0">CH 1</span><div class="ch-bar-bg"><div class="ch-bar-fill" id="chBar0"></div></div><span id="chTxt0" style="width:42px;text-align:right;color:#64748b;">IDLE</span></div>
+        <div class="ch-row"><span class="ch-badge" id="chBadge1">CH 2</span><div class="ch-bar-bg"><div class="ch-bar-fill" id="chBar1"></div></div><span id="chTxt1" style="width:42px;text-align:right;color:#64748b;">IDLE</span></div>
+        <div class="ch-row"><span class="ch-badge" id="chBadge2">CH 3</span><div class="ch-bar-bg"><div class="ch-bar-fill" id="chBar2"></div></div><span id="chTxt2" style="width:42px;text-align:right;color:#64748b;">IDLE</span></div>
+        <div class="ch-row"><span class="ch-badge" id="chBadge3">CH 4</span><div class="ch-bar-bg"><div class="ch-bar-fill" id="chBar3"></div></div><span id="chTxt3" style="width:42px;text-align:right;color:#64748b;">IDLE</span></div>
+      </div>
+
+      <canvas id="netGraph" width="320" height="64"></canvas>
+    </div>
+
+    <!-- COLUNA DIREITA: Pareamento PIN/QR + Transferência + Walkie Talkie -->
+    <div class="card">
+
+      <!-- TELA DE PAREAMENTO (PC ⇄ CELULAR) -->
+      <div id="pairingSection">
+        <div class="tabs">
+          <button class="tab-btn active" id="tabPin" onclick="alternarMetodoPareamento('pin')">⚡ Parear por PIN / QR Code (Automático)</button>
+          <button class="tab-btn" id="tabOffline" onclick="alternarMetodoPareamento('offline')">🌲 Modo Mato (100% Sem Internet)</button>
+        </div>
+
+        <!-- MODO 1: PAREAMENTO POR PIN DE 4 DÍGITOS E QR CODE (IDEAL PARA GITHUB PAGES) -->
+        <div id="boxPareamentoPin">
+          <div class="pin-grid">
+            <!-- Lado A: Criar Sala (No PC ou Celular 1) -->
+            <div class="pin-card">
+              <div>
+                <div style="font-size:13px; font-weight:800; color:#fff;">1. Criar Sala neste Aparelho</div>
+                <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">Gera um código de 4 números e um QR Code para o outro aparelho entrar direto:</div>
+              </div>
+
+              <div class="pin-display" id="myPinDisplay">----</div>
+              <div id="qrBox"></div>
+
+              <button class="btn btn-primary" id="btnCreatePin" onclick="criarSalaPin()">⚡ Gerar PIN de 4 Dígitos & QR</button>
+            </div>
+
+            <!-- Lado B: Entrar na Sala (No Celular ou PC 2) -->
+            <div class="pin-card">
+              <div>
+                <div style="font-size:13px; font-weight:800; color:#fff;">2. Conectar no Outro Aparelho</div>
+                <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">Digite abaixo os 4 números que apareceram na tela do outro aparelho:</div>
+              </div>
+
+              <input type="tel" maxlength="4" class="pin-input" id="remotePinInput" placeholder="0000" onkeydown="if(event.key==='Enter') conectarSalaPin()">
+
+              <button class="btn btn-emerald" id="btnJoinPin" onclick="conectarSalaPin()">🚀 Conectar Agora (PC ⇄ Celular)</button>
+            </div>
+          </div>
+          <div style="text-align:center; font-size:11px; color:var(--text-muted); margin-top:12px;">
+            💡 <b>Importante:</b> Conecte o Celular e o PC no mesmo Wi-Fi (ou no Roteador 5GHz do Celular). Os dados dos arquivos passam <b>100% direto pela antena local</b> sem gastar sua internet!
+          </div>
+        </div>
+
+        <!-- MODO 2: MODO MATO (100% SEM INTERNET / CHAVE MANUAL) -->
+        <div id="boxPareamentoOffline" style="display:none;">
+          <div style="font-size:12px; color:var(--text-muted); margin-bottom:10px;">
+            Use este modo quando estiver em campo aberto sem nenhum sinal de internet (apenas com o Roteador Wi-Fi ligado):
+          </div>
+          <div class="pin-grid">
+            <div class="pin-card" style="text-align:left; align-items:stretch;">
+              <strong style="font-size:12px;">Passo A (Aparelho 1):</strong>
+              <button class="btn btn-primary" style="margin:6px 0;" onclick="gerarOfertaManual()">1. Gerar Chave Offline</button>
+              <textarea class="code-area" id="manHostOut" readonly placeholder="Chave do Aparelho 1..." onclick="this.select()"></textarea>
+              <textarea class="code-area" id="manHostIn" placeholder="Cole aqui a contra-chave do Aparelho 2..."></textarea>
+              <button class="btn btn-emerald" onclick="finalizarManualHost()">3. Abrir Conexão</button>
+            </div>
+            <div class="pin-card" style="text-align:left; align-items:stretch;">
+              <strong style="font-size:12px;">Passo B (Aparelho 2):</strong>
+              <textarea class="code-area" id="manPeerIn" placeholder="Cole aqui a chave do Aparelho 1..."></textarea>
+              <button class="btn btn-primary" style="margin:6px 0;" onclick="gerarRespostaManual()">2. Gerar Contra-Chave</button>
+              <textarea class="code-area" id="manPeerOut" readonly placeholder="Copie e devolva ao Aparelho 1..." onclick="this.select()"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CENTRAL DE TRANSFERÊNCIA + WALKIE-TALKIE (APARECE CONECTADO) -->
+      <div id="workspaceSection" style="display:none;">
+        <!-- Botão de Gravação Direta no SSD (No PC) -->
+        <div id="ssdPromptBox" style="display:none; margin-bottom:12px;">
+          <button class="btn btn-amber" onclick="autorizarGravacaoSSD()">
+            💾 GRAVAR DIRETO NO SSD DO PC (ZERO RAM): <span id="incomingFileLabel"></span>
+          </button>
+        </div>
+
+        <!-- Walkie-Talkie de Voz em Tempo Real (PC <-> Celular) -->
+        <div style="margin-bottom:12px;">
+          <button class="btn btn-rose" id="btnWalkieTalkie">
+            🎙️ SEGURE PARA FALAR (WALKIE-TALKIE VOZ AO VIVO)
+          </button>
+          <audio id="remoteAudio" autoplay playsinline style="display:none;"></audio>
+        </div>
+
+        <!-- Selecionar Arquivos ou Fotos da Galeria do Celular -->
+        <label class="dropzone" id="dropzone">
+          <input type="file" id="fileInput" multiple style="display:none;" onchange="adicionarFilaArquivos(this.files)">
+          <div class="dropzone-icon">📦📲</div>
+          <div class="dropzone-title">Toque para enviar Fotos, Vídeos ou Arquivos Pesados</div>
+          <div class="dropzone-sub">No PC: Arraste pastas/arquivos • No Celular: Escolha da Galeria ou Arquivos (4 Canais 5GHz)</div>
+        </label>
+
+        <!-- Barra de Progresso -->
+        <div class="active-transfer" id="activeTransferBox">
+          <div class="file-head">
+            <div class="file-title" id="curFileName">Transferindo...</div>
+            <div class="file-pct" id="curFilePct">0.0%</div>
+          </div>
+          <div class="pbar-outer"><div class="pbar-inner" id="curFileBar"></div></div>
+          <div class="file-meta">
+            <span id="curFileSize">0 / 0 MB</span>
+            <span id="curFileEta">ETA: --s</span>
+          </div>
+        </div>
+
+        <!-- Histórico + Botão de Baixar no Celular -->
+        <div class="card-title" style="margin-bottom:6px;">
+          <span>📂 Arquivos Recebidos & Chat</span>
+        </div>
+        <div class="history-list" id="historyList"></div>
+
+        <!-- Chat Instantâneo -->
+        <div class="chat-bar">
+          <input type="text" id="chatInput" placeholder="Mensagem rápida ou link PC ⇄ Celular..." onkeydown="if(event.key==='Enter') enviarMensagemChat()">
+          <button class="btn btn-primary" style="width:auto; padding:0 18px;" onclick="enviarMensagemChat()">Enviar</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  // Detecta se está rodando no Celular ou no PC para ajustar tamanho de pacote e RAM
+  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  document.getElementById('deviceBadge').innerText = isMobile ? '📱 MODO CELULAR' : '💻 MODO PC (SSD)';
+
+  // Configuração da conexão WebRTC Local
+  const pc = new RTCPeerConnection({
+    iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
+  });
+
+  const NUM_CANAIS = 4;
+  // 256 KB no PC e 128 KB no Celular para não engasgar o processador mobile
+  const CHUNK_SIZE = isMobile ? (128 * 1024) : (256 * 1024);
+  const MAX_BUFFER_CANAL = isMobile ? (4 * 1024 * 1024) : (8 * 1024 * 1024);
+
+  let canais = [];
+  let canaisAbertos = 0;
+  let canalCtrl = null;
+  let peerSinalizador = null;
+  let connSinalizador = null;
+
+  // Fila de arquivos
+  let filaEnvio = [];
+  let enviandoAgora = false;
+  let arquivoAtualTX = null;
+
+  // Estado de Recepção (RX)
+  let infoRX = null;
+  let bytesRecebidos = 0;
+  let tInicioTransfer = 0;
+  let writableSSD = null;
+  let filaEscritaSSD = Promise.resolve();
+  let chunksRAM = [];
+
+  // Telemetria
+  let picoMBs = 0;
+  let totalBytesSessao = 0;
+  let ultimoBytesMedidos = 0;
+  let ultimoTempoMedido = performance.now();
+  let bytesPorCanal = [0, 0, 0, 0];
+  let historicoVelocidade = new Array(50).fill(0);
+
+  // Walkie-Talkie Voz Ao Vivo (WebRTC Audio Track)
+  let localAudioStream = null;
+  let audioTrack = null;
+
+  const canvasGraph = document.getElementById('netGraph');
+  const ctxGraph = canvasGraph.getContext('2d');
+
+  // Se o celular abriu o link lendo o QR Code (?pin=1234), já preenche e conecta sozinho!
+  window.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    const pinUrl = params.get('pin');
+    if (pinUrl && pinUrl.length === 4) {
+      document.getElementById('remotePinInput').value = pinUrl;
+      setTimeout(() => conectarSalaPin(), 400);
+    }
+  });
+
+  function alternarMetodoPareamento(metodo) {
+    document.getElementById('tabPin').classList.toggle('active', metodo === 'pin');
+    document.getElementById('tabOffline').classList.toggle('active', metodo === 'offline');
+    document.getElementById('boxPareamentoPin').style.display = metodo === 'pin' ? 'block' : 'none';
+    document.getElementById('boxPareamentoOffline').style.display = metodo === 'offline' ? 'block' : 'none';
+  }
+
+  // ============================================================================
+  // 1. PAREAMENTO AUTOMÁTICO POR PIN DE 4 DÍGITOS + QR CODE (VIA PEERJS SIGNAL)
+  // ============================================================================
+  function criarSalaPin() {
+    const pin = Math.floor(1000 + Math.random() * 9000).toString();
+    const roomId = 'caroa-hyperdrop-' + pin;
+    document.getElementById('myPinDisplay').innerText = pin;
+    document.getElementById('btnCreatePin').innerText = '⏳ Aguardando o outro aparelho...';
+
+    // Gera QR Code apontando para a URL atual do seu GitHub Pages com ?pin=XXXX
+    const qrBox = document.getElementById('qrBox');
+    qrBox.innerHTML = '';
+    qrBox.style.display = 'inline-block';
+    const urlCompleta = window.location.origin + window.location.pathname + '?pin=' + pin;
+    new QRCode(qrBox, { text: urlCompleta, width: 135, height: 135 });
+
+    peerSinalizador = new Peer(roomId);
+    peerSinalizador.on('connection', (conn) => {
+      connSinalizador = conn;
+      configurarTrocaAutomaticaSDP(conn, true);
+    });
+  }
+
+  function conectarSalaPin() {
+    const pin = document.getElementById('remotePinInput').value.trim();
+    if (pin.length !== 4) return alert("Digite os 4 números do PIN!");
+
+    document.getElementById('btnJoinPin').innerText = '⏳ Conectando aos 4 canais...';
+    peerSinalizador = new Peer();
+    peerSinalizador.on('open', () => {
+      const conn = peerSinalizador.connect('caroa-hyperdrop-' + pin);
+      connSinalizador = conn;
+      configurarTrocaAutomaticaSDP(conn, false);
+    });
+  }
+
+  function configurarTrocaAutomaticaSDP(conn, souHost) {
+    conn.on('open', async () => {
+      if (souHost) {
+        // Cria os 4 canais nativos de alta velocidade + canal de controle
+        iniciarCanaisHost();
+        const offer = await pc.createOffer();
+        await pc.setLocalDescription(offer);
+      }
+    });
+
+    conn.on('data', async ( msg ) => {
+      if (msg.tipo === 'sdp') {
+        await pc.setRemoteDescription(new RTCSessionDescription(msg.sdp));
+        if (msg.sdp.type === 'offer') {
+          const answer = await pc.createAnswer();
+          await pc.setLocalDescription(answer);
+        }
+      }
+    });
+  }
+
+  // Envia o SDP completo assim que a placa de rede listar os IPs locais (LAN)
+  let modoManualAtivo = false;
+  let papelManual = 'host';
+
+  pc.onicecandidate = (e) => {
+    if (!e.candidate) {
+      if (connSinalizador && connSinalizador.open) {
+        connSinalizador.send({ tipo: 'sdp', sdp: pc.localDescription });
+      } else if (modoManualAtivo) {
+        const codigo = btoa(JSON.stringify(pc.localDescription));
+        if (papelManual === 'host') {
+          document.getElementById('manHostOut').value = codigo;
+          navigator.clipboard?.writeText(codigo).catch(()=>{});
+        } else {
+          document.getElementById('manPeerOut').value = codigo;
+          navigator.clipboard?.writeText(codigo).catch(()=>{});
+        }
+      }
+    }
+  };
+
+  function iniciarCanaisHost() {
+    canalCtrl = pc.createDataChannel('ctrl', { ordered: true });
+    configurarCanalControle(canalCtrl);
+    for (let i = 0; i < NUM_CANAIS; i++) {
+      const ch = pc.createDataChannel('lane_' + i, { ordered: true });
+      configurarCanalDados(ch, i);
+    }
+  }
+
+  // Funções do Modo Mato (100% Offline sem internet)
+  async function gerarOfertaManual() {
+    modoManualAtivo = true; papelManual = 'host';
+    iniciarCanaisHost();
+    const offer = await pc.createOffer();
+    await pc.setLocalDescription(offer);
+  }
+  async function gerarRespostaManual() {
+    modoManualAtivo = true; papelManual = 'peer';
+    const raw = document.getElementById('manPeerIn').value.trim();
+    if (!raw) return;
+    await pc.setRemoteDescription(new RTCSessionDescription(JSON.parse(atob(raw))));
+    const answer = await pc.createAnswer();
+    await pc.setLocalDescription(answer);
+  }
+  async function finalizarManualHost() {
+    const raw = document.getElementById('manHostIn').value.trim();
+    if (!raw) return;
+    await pc.setRemoteDescription(new RTCSessionDescription(JSON.parse(atob(raw))));
+  }
+
+  // ============================================================================
+  // 2. WALKIE-TALKIE DE VOZ EM TEMPO REAL (BOTÃO PTT)
+  // ============================================================================
+  const btnWT = document.getElementById('btnWalkieTalkie');
+
+  pc.ontrack = (event) => {
+    const audioEl = document.getElementById('remoteAudio');
+    audioEl.srcObject = event.streams[0];
+    audioEl.play().catch(()=>{});
+  };
+
+  async function iniciarFalaPTT(e) {
+    if (e) e.preventDefault();
+    btnWT.classList.add('talking');
+    btnWT.innerText = '🟢 TRANSMITINDO VOZ AO VIVO...';
+
+    try {
+      if (!localAudioStream) {
+        localAudioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        audioTrack = localAudioStream.getAudioTracks()[0];
+        pc.addTrack(audioTrack, localAudioStream);
+        // Renegocia o canal para incluir a pista de voz ao vivo
+        const offer = await pc.createOffer();
+        await pc.setLocalDescription(offer);
+        if (canalCtrl && canalCtrl.readyState === 'open') {
+          canalCtrl.send(JSON.stringify({ cmd: 'renegociar_voz', sdp: pc.localDescription }));
+        }
+      } else {
+        audioTrack.enabled = true;
+      }
+      if (canalCtrl && canalCtrl.readyState === 'open') {
+        canalCtrl.send(JSON.stringify({ cmd: 'ptt_status', falando: true }));
+      }
+    } catch (err) {
+      alert("Permita o acesso ao microfone no navegador para usar o Walkie-Talkie!");
+      pararFalaPTT();
+    }
+  }
+
+  function pararFalaPTT(e) {
+    if (e) e.preventDefault();
+    if (!btnWT.classList.contains('talking')) return;
+    btnWT.classList.remove('talking');
+    btnWT.innerText = '🎙️ SEGURE PARA FALAR (WALKIE-TALKIE VOZ AO VIVO)';
+    if (audioTrack) audioTrack.enabled = false;
+    if (canalCtrl && canalCtrl.readyState === 'open') {
+      canalCtrl.send(JSON.stringify({ cmd: 'ptt_status', falando: false }));
+    }
+  }
+
+  btnWT.addEventListener('mousedown', iniciarFalaPTT);
+  window.addEventListener('mouseup', pararFalaPTT);
+  btnWT.addEventListener('touchstart', iniciarFalaPTT, { passive: false });
+  btnWT.addEventListener('touchend', pararFalaPTT, { passive: false });
+
+  // ============================================================================
+  // 3. MOTOR DE 4 CANAIS PARALELOS (ARQUIVOS PESADOS PC ⇄ CELULAR)
+  // ============================================================================
+  pc.ondatachannel = (e) => {
+    if (e.channel.label === 'ctrl') {
+      configurarCanalControle(e.channel);
+    } else if (e.channel.label.startsWith('lane_')) {
+      const idx = parseInt(e.channel.label.split('_')[1]);
+      configurarCanalDados(e.channel, idx);
+    }
+  };
+
+  function configurarCanalControle(ch) {
+    canalCtrl = ch;
+    ch.onmessage = async (e) => {
+      const msg = JSON.parse(e.data);
+
+      if (msg.cmd === 'oferta_arquivo') {
+        infoRX = msg;
+        bytesRecebidos = 0;
+        chunksRAM = [];
+        bytesPorCanal = [0, 0, 0, 0];
+
+        document.getElementById('activeTransferBox').classList.add('show');
+        document.getElementById('curFileName').innerText = `📥 Recebendo: ${msg.nome}`;
+
+        // Se for PC com suporte a gravação direta no SSD e arquivo > 80 MB, oferece salvar direto no SSD
+        if (!isMobile && window.showSaveFilePicker && msg.tamanho > 80 * 1024 * 1024) {
+          document.getElementById('incomingFileLabel').innerText = `${msg.nome} (${(msg.tamanho/1048576).toFixed(1)} MB)`;
+          document.getElementById('ssdPromptBox').style.display = 'block';
+        } else {
+          confirmarInicioRecepcao();
+        }
+      } else if (msg.cmd === 'iniciar_bombeamento') {
+        bombearArquivo4X();
+      } else if (msg.cmd === 'fim_arquivo') {
+        concluirRecepcaoArquivo();
+      } else if (msg.cmd === 'chat') {
+        adicionarItemHistorico('CHAT RX', msg.texto, true);
+      } else if (msg.cmd === 'renegociar_voz') {
+        await pc.setRemoteDescription(new RTCSessionDescription(msg.sdp));
+        if (msg.sdp.type === 'offer') {
+          const ans = await pc.createAnswer();
+          await pc.setLocalDescription(ans);
+          canalCtrl.send(JSON.stringify({ cmd: 'renegociar_voz', sdp: pc.localDescription }));
+        }
+      } else if (msg.cmd === 'ptt_status') {
+        btnWT.innerText = msg.falando ? '🔊 O OUTRO APARELHO ESTÁ FALANDO...' : '🎙️ SEGURE PARA FALAR (WALKIE-TALKIE VOZ AO VIVO)';
+      }
+    };
+  }
+
+  async function autorizarGravacaoSSD() {
+    try {
+      const handle = await window.showSaveFilePicker({ suggestedName: infoRX.nome });
+      writableSSD = await handle.createWritable();
+    } catch (e) {
+      writableSSD = null;
+    }
+    document.getElementById('ssdPromptBox').style.display = 'none';
+    confirmarInicioRecepcao();
+  }
+
+  function confirmarInicioRecepcao() {
+    tInicioTransfer = performance.now();
+    ultimoTempoMedido = tInicioTransfer;
+    ultimoBytesMedidos = 0;
+    canalCtrl.send(JSON.stringify({ cmd: 'iniciar_bombeamento' }));
+  }
+
+  function configurarCanalDados(ch, idx) {
+    ch.binaryType = 'arraybuffer';
+    ch.bufferedAmountLowThreshold = MAX_BUFFER_CANAL / 2;
+    canais[idx] = ch;
+
+    ch.onopen = () => {
+      canaisAbertos++;
+      document.getElementById('chBadge' + idx).classList.add('on');
+      document.getElementById('chTxt' + idx).innerText = 'OK';
+
+      if (canaisAbertos === NUM_CANAIS) {
+        document.getElementById('connPill').classList.add('online');
+        document.getElementById('connText').innerText = 'CONECTADO (4X TURBO)';
+        document.getElementById('pairingSection').style.display = 'none';
+        document.getElementById('workspaceSection').style.display = 'block';
+        iniciarLoopGrafico();
+      }
+    };
+
+    ch.onmessage = (e) => {
+      const buffer = e.data;
+      const dv = new DataView(buffer);
+      const offsetAlto = dv.getUint32(0);
+      const offsetBaixo = dv.getUint32(4);
+      const offsetExato = (offsetAlto * 4294967296) + offsetBaixo;
+      const payload = new Uint8Array(buffer, 8);
+
+      bytesRecebidos += payload.byteLength;
+      totalBytesSessao += payload.byteLength;
+      bytesPorCanal[idx] += payload.byteLength;
+
+      if (writableSSD) {
+        filaEscritaSSD = filaEscritaSSD.then(() =>
+          writableSSD.write({ type: 'write', position: offsetExato, data: payload })
+        );
+      } else {
+        chunksRAM.push({ offset: offsetExato, data: payload });
+      }
+
+      atualizarTelemetria(bytesRecebidos, infoRX.tamanho);
+    };
+  }
+
+  // Drag & Drop no PC
+  const dz = document.getElementById('dropzone');
+  ['dragenter', 'dragover'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); }));
+  dz.addEventListener('drop', e => {
+    e.preventDefault();
+    if (e.dataTransfer.files.length > 0) adicionarFilaArquivos(e.dataTransfer.files);
+  });
+
+  function adicionarFilaArquivos(files) {
+    for (let f of files) filaEnvio.push(f);
+    processarProximoDaFila();
+  }
+
+  function processarProximoDaFila() {
+    if (enviandoAgora || filaEnvio.length === 0) return;
+    enviandoAgora = true;
+    arquivoAtualTX = filaEnvio.shift();
+    bytesPorCanal = [0, 0, 0, 0];
+
+    document.getElementById('activeTransferBox').classList.add('show');
+    document.getElementById('curFileName').innerText = `📤 Preparando: ${arquivoAtualTX.name}`;
+
+    canalCtrl.send(JSON.stringify({
+      cmd: 'oferta_arquivo',
+      nome: arquivoAtualTX.name,
+      tamanho: arquivoAtualTX.size,
+      mime: arquivoAtualTX.type || 'application/octet-stream'
+    }));
+  }
+
+  async function bombearArquivo4X() {
+    const file = arquivoAtualTX;
+    let offsetGlobal = 0;
+    let bytesEnviados = 0;
+    tInicioTransfer = performance.now();
+    ultimoTempoMedido = tInicioTransfer;
+    ultimoBytesMedidos = 0;
+
+    document.getElementById('curFileName').innerText = `📤 Enviando: ${file.name}`;
+
+    const workerCanal = async (idx) => {
+      const ch = canais[idx];
+      while (offsetGlobal < file.size) {
+        if (ch.bufferedAmount > MAX_BUFFER_CANAL) {
+          await new Promise(res => {
+            ch.onbufferedamountlow = () => { ch.onbufferedamountlow = null; res(); };
+          });
+          continue;
+        }
+
+        const meuOffset = offsetGlobal;
+        offsetGlobal += CHUNK_SIZE;
+        if (meuOffset >= file.size) break;
+
+        const fatia = file.slice(meuOffset, Math.min(meuOffset + CHUNK_SIZE, file.size));
+        const raw = await fatia.arrayBuffer();
+
+        const pacote = new Uint8Array(8 + raw.byteLength);
+        const dv = new DataView(pacote.buffer);
+        dv.setUint32(0, Math.floor(meuOffset / 4294967296));
+        dv.setUint32(4, meuOffset >>> 0);
+        pacote.set(new Uint8Array(raw), 8);
+
+        ch.send(pacote.buffer);
+        bytesEnviados += raw.byteLength;
+        totalBytesSessao += raw.byteLength;
+        bytesPorCanal[idx] += raw.byteLength;
+
+        atualizarTelemetria(bytesEnviados, file.size);
+      }
+    };
+
+    await Promise.all([workerCanal(0), workerCanal(1), workerCanal(2), workerCanal(3)]);
+
+    while (canais.some(c => c.bufferedAmount > 0)) {
+      await new Promise(r => setTimeout(r, 40));
+    }
+
+    canalCtrl.send(JSON.stringify({ cmd: 'fim_arquivo' }));
+    adicionarItemHistorico('ENVIADO', `${file.name} (${(file.size/1048576).toFixed(1)} MB)`, false);
+    zerarBarrasCanais();
+
+    enviandoAgora = false;
+    processarProximoDaFila();
+  }
+
+  async function concluirRecepcaoArquivo() {
+    if (writableSSD) {
+      await filaEscritaSSD;
+      await writableSSD.close();
+      writableSSD = null;
+      adicionarItemHistorico('SALVO NO SSD', `${infoRX.nome} (${(infoRX.tamanho/1048576).toFixed(1)} MB)`, true);
+    } else {
+      chunksRAM.sort((a, b) => a.offset - b.offset);
+      const blob = new Blob(chunksRAM.map(c => c.data), { type: infoRX.mime });
+      const url = URL.createObjectURL(blob);
+
+      // Dispara download automático e também cria botão de salvar para iOS/Safari
+      const a = document.createElement('a');
+      a.href = url; a.download = infoRX.nome; a.click();
+      chunksRAM = [];
+
+      adicionarItemHistorico(
+        'RECEBIDO',
+        `${infoRX.nome} (${(infoRX.tamanho/1048576).toFixed(1)} MB) — <a href="${url}" download="${infoRX.nome}" style="color:var(--cyan-glow);font-weight:bold;">[Baixar Novamente]</a>`,
+        true
+      );
+    }
+    zerarBarrasCanais();
+  }
+
+  function atualizarTelemetria(atual, total) {
+    const agora = performance.now();
+    const dt = (agora - ultimoTempoMedido) / 1000;
+
+    if (dt >= 0.2 || atual >= total) {
+      const dBytes = atual - ultimoBytesMedidos;
+      const velInst = (dBytes / 1048576) / (dt || 0.001);
+      if (velInst > picoMBs) picoMBs = velInst;
+
+      const velMedia = (atual / 1048576) / ((agora - tInicioTransfer) / 1000);
+      const pct = Math.min(100, (atual / total) * 100);
+      const faltaMB = (total - atual) / 1048576;
+      const eta = velMedia > 0 ? Math.ceil(faltaMB / velMedia) : 0;
+
+      document.getElementById('speedNum').innerText = velInst.toFixed(1);
+      const frac = Math.min(1, velInst / 80);
+      document.getElementById('gaugeArc').style.strokeDashoffset = (251.2 * (1 - frac)).toFixed(1);
+
+      document.getElementById('peakVal').innerText = picoMBs.toFixed(1) + ' MB/s';
+      document.getElementById('avgVal').innerText = velMedia.toFixed(1) + ' MB/s';
+      document.getElementById('totalMovedVal').innerText = (totalBytesSessao / 1048576).toFixed(0) + ' MB';
+
+      document.getElementById('curFilePct').innerText = pct.toFixed(1) + '%';
+      document.getElementById('curFileBar').style.width = pct.toFixed(1) + '%';
+      document.getElementById('curFileSize').innerText = `${(atual/1048576).toFixed(1)} / ${(total/1048576).toFixed(1)} MB`;
+      document.getElementById('curFileEta').innerText = atual >= total ? '100% Concluído!' : `ETA: ${eta}s`;
+
+      const maxCh = Math.max(...bytesPorCanal, 1);
+      for (let i = 0; i < 4; i++) {
+        const carga = Math.min(100, Math.round((bytesPorCanal[i] / maxCh) * 100));
+        document.getElementById('chBar' + i).style.width = carga + '%';
+        document.getElementById('chTxt' + i).innerText = (bytesPorCanal[i] / 1048576).toFixed(0) + 'MB';
+      }
+
+      historicoVelocidade.push(velInst);
+      if (historicoVelocidade.length > 50) historicoVelocidade.shift();
+
+      ultimoTempoMedido = agora;
+      ultimoBytesMedidos = atual;
+    }
+  }
+
+  function zerarBarrasCanais() {
+    document.getElementById('speedNum').innerText = '0.0';
+    document.getElementById('gaugeArc').style.strokeDashoffset = '251.2';
+    for (let i = 0; i < 4; i++) document.getElementById('chBar' + i).style.width = '0%';
+  }
+
+  function iniciarLoopGrafico() {
+    const render = () => {
+      requestAnimationFrame(render);
+      const w = canvasGraph.width, h = canvasGraph.height;
+      ctxGraph.clearRect(0, 0, w, h);
+      const maxVal = Math.max(...historicoVelocidade, 40);
+      ctxGraph.beginPath(); ctxGraph.moveTo(0, h);
+      for (let i = 0; i < historicoVelocidade.length; i++) {
+        const x = (i / (historicoVelocidade.length - 1)) * w;
+        const y = h - (historicoVelocidade[i] / maxVal) * (h - 10);
+        ctxGraph.lineTo(x, y);
+      }
+      ctxGraph.strokeStyle = '#06b6d4'; ctxGraph.lineWidth = 2; ctxGraph.stroke();
+      ctxGraph.lineTo(w, h); ctxGraph.closePath();
+      ctxGraph.fillStyle = 'rgba(6, 182, 212, 0.25)'; ctxGraph.fill();
+    };
+    render();
+  }
+
+  function enviarMensagemChat() {
+    const inp = document.getElementById('chatInput');
+    const txt = inp.value.trim();
+    if (!txt || !canalCtrl || canalCtrl.readyState !== 'open') return;
+    canalCtrl.send(JSON.stringify({ cmd: 'chat', texto: txt }));
+    adicionarItemHistorico('ENVIADO', txt, false);
+    inp.value = '';
+  }
+
+  function adicionarItemHistorico(tag, htmlTexto, isRx) {
+    const list = document.getElementById('historyList');
+    const item = document.createElement('div');
+    item.className = 'history-item';
+    const hora = new Date().toLocaleTimeString('pt-BR', { hour12: false });
+    item.innerHTML = `
+      <div style="display:flex;align-items:center;gap:8px;overflow:hidden;">
+        <span class="history-tag ${isRx ? 'tag-rx' : 'tag-tx'}">${tag}</span>
+        <span style="word-break:break-all;">${htmlTexto}</span>
+      </div>
+      <span style="font-family:monospace;font-size:10px;color:var(--text-muted);">${hora}</span>
+    `;
+    list.prepend(item);
+  }
+</script>
+</body>
+</html>
